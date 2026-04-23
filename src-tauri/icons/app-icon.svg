@@ -1,14 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1d4ed8" />
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)" />
-  <circle cx="256" cy="256" r="156" fill="#38bdf8" opacity="0.18" />
-  <path
-    d="M166 152h64v142c0 38 18 57 54 57 29 0 51-8 64-18v57c-18 13-45 22-81 22-76 0-101-40-101-105V152zm138 0h66l49 92 51-92h42l-81 146 86 152h-67l-53-97-54 97h-43l87-152-83-146z"
-    fill="#f8fafc"
-  />
+<svg
+  width="180px"
+  height="180px"
+  viewBox="-3.68 -3.68 23.36 23.36"
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+  <rect x="-3.68" y="-3.68" width="23.36" height="23.36" rx="11.68" fill="#1c71d8" />
+  <g transform="translate(16 0) scale(-1 1)">
+    <g transform="translate(0 1)" fill="#ffffff">
+      <path d="M5.939 0C2.666 0 0.009 1.987 0.009 4.438c0 2.236 2.215 4.082 5.092 4.387L3.88 11.26l4.249-2.7C10.318 7.906 12 6.309 12 4.438 12 1.988 9.213 0 5.939 0Z" />
+      <path d="M15.947 8.89c0-1.124-1.062-2.288-2.289-2.868-.344 1.95-1.924 3.745-4.417 4.447l-1.187.642c.454.34 1.01.611 1.634.788l3.638 1.971-1.303-1.776c2.217-.225 3.924-1.571 3.924-3.204Z" />
+    </g>
+  </g>
 </svg>
