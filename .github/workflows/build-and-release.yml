@@ -59,7 +59,7 @@ jobs:
         include:
           - platform_name: Linux
             runner: ubuntu-22.04
-            args: ""
+            args: --bundles appimage,deb,rpm
           - platform_name: Windows
             runner: windows-latest
             args: --target x86_64-pc-windows-msvc
