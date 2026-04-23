@@ -20,10 +20,10 @@ let
 in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
+    bun
     cargo
     cargo-tauri
     gobject-introspection
-    nodejs
     pkg-config
     rustc
     rustup

@@ -5,7 +5,7 @@ Desktop client for the QXP messaging web app, built with Tauri v2 and TypeScript
 ## Installation
 
 ```bash
-npm install
+bun install
 ```
 
 On NixOS, enter the prepared shell first:
@@ -23,21 +23,21 @@ nix-shell
 ## Development
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ## Build
 
 ```bash
-npm run build
+bun run build
 ```
 
 Platform helpers are also available:
 
 ```bash
-npm run build:mac
-npm run build:win
-npm run build:linux
+bun run build:mac
+bun run build:win
+bun run build:linux
 ```
 
 ## Permissions

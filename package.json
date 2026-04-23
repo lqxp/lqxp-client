@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "LQXP Chat Client",
   "type": "module",
+  "packageManager": "bun@1.3.12",
   "homepage": "./",
   "scripts": {
     "dev": "tauri dev",
