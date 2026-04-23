@@ -2,36 +2,27 @@
   "name": "lqxp-client",
   "version": "1.0.0",
   "description": "LQXP Chat Client",
-  "main": "main.js",
+  "type": "module",
   "homepage": "./",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --dev",
-    "build": "electron-builder",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux"
+    "dev": "tauri dev",
+    "start": "tauri dev",
+    "build": "tauri build",
+    "build:win": "tauri build --target x86_64-pc-windows-msvc",
+    "build:mac": "tauri build --target universal-apple-darwin",
+    "build:linux": "tauri build",
+    "tauri": "tauri",
+    "typecheck": "tsc --noEmit"
   },
   "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "electron": "latest",
-    "electron-builder": "latest"
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-notification": "^2.0.0",
+    "@tauri-apps/plugin-opener": "^2.0.0"
   },
-  "build": {
-    "appId": "com.qxp.client",
-    "productName": "LQXP Client",
-    "directories": {
-      "buildResources": "assets"
-    },
-    "mac": {
-      "target": ["dmg", "zip"]
-    },
-    "win": {
-      "target": ["nsis", "portable"]
-    },
-    "linux": {
-      "target": ["AppImage", "deb"]
-    }
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "typescript": "^5.4.0"
   }
 }

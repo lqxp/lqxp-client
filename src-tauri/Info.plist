@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>NSCameraUsageDescription</key>
+    <string>LQXP Client needs camera access for calls and messaging features.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>LQXP Client needs microphone access for calls and voice messaging features.</string>
+  </dict>
+</plist>

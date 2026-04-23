@@ -1,0 +1,26 @@
+{
+  "identifier": "main-messaging",
+  "description": "Permissions for the QXP messaging web client in the main window.",
+  "windows": ["main"],
+  "remote": {
+    "urls": ["https://qxp.kisakay.com/*"]
+  },
+  "permissions": [
+    "core:default",
+    "notification:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://qxp.kisakay.com/*"
+        },
+        {
+          "url": "mailto:*"
+        },
+        {
+          "url": "tel:*"
+        }
+      ]
+    }
+  ]
+}
