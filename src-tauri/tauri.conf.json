@@ -4,8 +4,10 @@
   "version": "1.0.0",
   "identifier": "com.qxp.client",
   "build": {
-    "devUrl": "https://qxp.kisakay.com/#/",
-    "frontendDist": "https://qxp.kisakay.com/#/"
+    "beforeDevCommand": "cd QxpClient && bun install && bun vite --host 0.0.0.0",
+    "beforeBuildCommand": "cd QxpClient && bun install && bun vite build",
+    "devUrl": "http://localhost:4173/#/",
+    "frontendDist": "../serve.public"
   },
   "app": {
     "withGlobalTauri": true,

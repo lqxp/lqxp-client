@@ -4,6 +4,12 @@ Desktop client for the QXP messaging web app, built with Tauri v2 and TypeScript
 
 ## Installation
 
+Clone with submodules, or initialize them after cloning:
+
+```bash
+git submodule update --init --recursive
+```
+
 ```bash
 bun install
 ```
@@ -43,9 +49,9 @@ bun run build:linux
 ## Permissions
 
 The main Tauri capability is declared in `src-tauri/capabilities/default.json`.
-It grants the QXP remote webview access to core Tauri APIs, notification APIs for messaging, and restricted URL opening for QXP, `mailto:` and `tel:` links.
+It grants the bundled QXP web client access to core Tauri APIs, notification APIs for messaging, and restricted URL opening for QXP, `mailto:` and `tel:` links.
 
-With `"withGlobalTauri": true`, the remote page can use Tauri guest APIs through `window.__TAURI__` when needed, including notifications.
+With `"withGlobalTauri": true`, the bundled page can use Tauri guest APIs through `window.__TAURI__` when needed, including notifications.
 
 Native media permissions for macOS are declared in `src-tauri/Info.plist` for camera and microphone access used by calls or voice features in the remote web app. Speaker output does not require a separate Tauri permission.
 

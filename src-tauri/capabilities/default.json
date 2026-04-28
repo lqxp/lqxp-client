@@ -2,9 +2,7 @@
   "identifier": "main-messaging",
   "description": "Permissions for the QXP messaging web client in the main window.",
   "windows": ["main"],
-  "remote": {
-    "urls": ["https://qxp.kisakay.com/*"]
-  },
+  "local": true,
   "permissions": [
     "core:default",
     "notification:default",

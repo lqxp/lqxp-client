@@ -1,0 +1,3 @@
+[submodule "QxpClient"]
+	path = QxpClient
+	url = https://github.com/lqxp/QxpClient.git
