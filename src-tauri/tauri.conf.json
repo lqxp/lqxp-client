@@ -5,7 +5,7 @@
   "identifier": "com.qxp.client",
   "build": {
     "beforeDevCommand": "cd QxpClient && bun install --no-save && bun vite --host 0.0.0.0",
-    "beforeBuildCommand": "cd QxpClient && bun install --no-save && bun vite build",
+    "beforeBuildCommand": "cd QxpClient && bun run build",
     "devUrl": "http://localhost:4173/#/",
     "frontendDist": "../serve.public"
   },
