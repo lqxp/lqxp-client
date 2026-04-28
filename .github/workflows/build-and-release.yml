@@ -79,12 +79,13 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.runner == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.runner == 'macos-latest' &&
+            'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Cache Rust build
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: src-tauri -> target   # adjust if your Tauri dir differs
+          workspaces: src-tauri -> target # adjust if your Tauri dir differs
 
       - name: Install Linux system dependencies
         if: matrix.runner == 'ubuntu-22.04'
@@ -92,12 +93,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
+            libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf \
             libssl-dev \
             libgtk-3-dev \
-            libayatana-appindicator3-dev \
             wget \
             file \
             curl \
