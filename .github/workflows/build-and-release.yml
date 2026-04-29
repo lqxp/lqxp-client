@@ -150,9 +150,10 @@ jobs:
         run: |
           nix develop --command bash -lc '
             set -euo pipefail
-            bun install
-            (cd QxpClient && bun install)
-            lqxp-rustup-android-targets
+            bun install --no-save
+            (cd QxpClient && bun install --no-save)
+            rustup toolchain install "${RUSTUP_TOOLCHAIN:-stable}" --profile minimal
+            rustup target add --toolchain "${RUSTUP_TOOLCHAIN:-stable}" $TAURI_ANDROID_RUST_TARGETS
             bun tauri android build
           '
 
