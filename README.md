@@ -46,6 +46,24 @@ bun run build:win
 bun run build:linux
 ```
 
+## iOS
+
+iOS builds require macOS with the full Xcode app installed.
+
+```bash
+nix-shell
+bun run ios:build --export-method development
+```
+
+For development on a simulator or device:
+
+```bash
+nix-shell
+bun run ios:dev -- --open
+```
+
+The GitHub workflow for simulator builds and signed IPA builds is documented in [docs/tauri-ios.md](docs/tauri-ios.md).
+
 ## Permissions
 
 The main Tauri capability is declared in `src-tauri/capabilities/default.json`.

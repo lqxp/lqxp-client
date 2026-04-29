@@ -12,6 +12,9 @@
     "build:win": "tauri build --target x86_64-pc-windows-msvc",
     "build:mac": "tauri build --target universal-apple-darwin",
     "build:linux": "scripts/tauri-build.sh",
+    "ios:init": "tauri ios init --skip-targets-install",
+    "ios:dev": "scripts/ios-dev.sh",
+    "ios:build": "scripts/ios-build.sh",
     "tauri": "tauri",
     "typecheck": "tsc --noEmit"
   },

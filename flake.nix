@@ -74,10 +74,12 @@
             jdk
             pkg-config
             rustc
-            rustup
-            wrapGAppsHook4
-            gst_all_1.gstreamer.dev
-          ];
+              rustup
+              wrapGAppsHook4
+              gst_all_1.gstreamer.dev
+            ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+              pkgs.cocoapods
+            ];
 
           buildInputs = (with pkgs; [
             at-spi2-atk
@@ -134,11 +136,17 @@
             export ANDROID_API_LEVEL="24"
             export ANDROID_PLATFORM="android-$ANDROID_API_LEVEL"
             export TAURI_ANDROID_RUST_TARGETS="aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android"
+            export TAURI_IOS_RUST_TARGETS="aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim"
             export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
 
             lqxp-rustup-android-targets() {
               rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
               rustup target add --toolchain "$RUSTUP_TOOLCHAIN" $TAURI_ANDROID_RUST_TARGETS
+            }
+
+            lqxp-rustup-ios-targets() {
+              rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+              rustup target add --toolchain "$RUSTUP_TOOLCHAIN" $TAURI_IOS_RUST_TARGETS
             }
 
             if [ -d "$ANDROID_SDK_ROOT/cmake" ]; then
@@ -196,6 +204,9 @@
             export GIO_MODULE_DIR="${pkgs.glib-networking}/lib/gio/modules"
             export GST_PLUGIN_SYSTEM_PATH_1_0="${gstPluginPath}"
             export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+            alias lqxp-ios-build="bun run ios:build"
+            alias lqxp-ios-dev="bun run ios:dev"
           '';
         };
       });
