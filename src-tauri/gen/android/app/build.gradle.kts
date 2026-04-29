@@ -13,6 +13,27 @@ val tauriProperties = Properties().apply {
     }
 }
 
+val signingProperties = Properties().apply {
+    val propFile = rootProject.file("keystore.properties")
+    if (propFile.exists()) {
+        propFile.inputStream().use { load(it) }
+    }
+}
+
+fun signingProperty(name: String): String? =
+    signingProperties.getProperty(name) ?: System.getenv(name)
+
+val releaseKeystorePath = signingProperty("ANDROID_KEYSTORE_PATH")
+val releaseKeystorePassword = signingProperty("ANDROID_KEYSTORE_PASSWORD")
+val releaseKeyAlias = signingProperty("ANDROID_KEY_ALIAS")
+val releaseKeyPassword = signingProperty("ANDROID_KEY_PASSWORD") ?: releaseKeystorePassword
+val hasReleaseSigning = listOf(
+    releaseKeystorePath,
+    releaseKeystorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword,
+).all { !it.isNullOrBlank() }
+
 android {
     compileSdk = 36
     namespace = "com.qxp.client"
@@ -23,6 +44,16 @@ android {
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseKeystorePath!!)
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -37,6 +68,9 @@ android {
             }
         }
         getByName("release") {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
