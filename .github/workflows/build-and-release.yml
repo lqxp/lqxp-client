@@ -178,6 +178,12 @@ jobs:
             rustup toolchain install "${RUSTUP_TOOLCHAIN:-stable}" --profile minimal
             rustup target add --toolchain "${RUSTUP_TOOLCHAIN:-stable}" $TAURI_ANDROID_RUST_TARGETS
             bun tauri android build
+
+            apk="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk"
+            apksigner="$(find -L "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n1)"
+            zipalign="$(find -L "$ANDROID_HOME/build-tools" -type f -name zipalign | sort -V | tail -n1)"
+            "$apksigner" verify --verbose --print-certs "$apk"
+            "$zipalign" -c -P 16 -v 4 "$apk"
           '
 
       - name: Upload Android artifacts
