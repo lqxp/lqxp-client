@@ -126,3 +126,53 @@ jobs:
           generateReleaseNotes: true
           args: ${{ matrix.args }}
           tauriScript: bunx tauri
+
+  build-android:
+    name: Build Android APK
+    needs: prepare-release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Build Android APK
+        shell: bash
+        run: |
+          nix develop --command bash -lc '
+            set -euo pipefail
+            bun install
+            (cd QxpClient && bun install)
+            lqxp-rustup-android-targets
+            bun tauri android build
+          '
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lqxp-client-android
+          if-no-files-found: error
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
+
+      - name: Upload Android release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare-release.outputs.tag_name }}
+          name: LQXP Client v${{ needs.prepare-release.outputs.app_version }}
+          body: |
+            Build automatique GitHub Actions pour la version ${{ needs.prepare-release.outputs.app_version }}.
+          generate_release_notes: true
+          files: |
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab

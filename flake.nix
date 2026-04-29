@@ -37,7 +37,7 @@
           includeEmulator = "if-supported";
           includeNDK = "if-supported";
           includeSystemImages = false;
-          ndkVersions = [ "latest" ];
+          ndkVersions = [ "27.0.12077973" ];
         };
         androidSdk = androidComposition.androidsdk;
         androidSdkRoot = "${androidSdk}/libexec/android-sdk";
