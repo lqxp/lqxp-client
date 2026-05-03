@@ -87,42 +87,57 @@ To build a release APK:
 bun run build:android -- --apk --target aarch64
 ```
 
-Release APK signing is configured through `src-tauri/gen/android/keystore.properties`, which is ignored by git. The Gradle project reads these values from that file or from the environment:
+Release APK signing is configured through environment variables. Both `flake.nix`/`shell.nix` and `scripts/build-android.sh` load a local `.env` file automatically if it exists. `.env`, keystores, and generated Gradle signing files are ignored by git.
 
-```properties
-ANDROID_KEYSTORE_PATH=/absolute/path/to/lqxp-release.jks
-ANDROID_KEYSTORE_PASSWORD=change-me
-ANDROID_KEY_ALIAS=lqxp
-ANDROID_KEY_PASSWORD=change-me
-```
-
-The build script can create a local release keystore and configure signing automatically:
+Create a new local signing password and `.env` file:
 
 ```bash
-LQXP_ANDROID_CREATE_KEYSTORE=1 ANDROID_KEYSTORE_PASSWORD='change-me' bun run build:android -- --apk --target aarch64
+ANDROID_SIGNING_PASSWORD="$(openssl rand -base64 48)"
+mkdir -p "$HOME/.config/lqxp-client"
+cat > .env <<EOF
+LQXP_ANDROID_CREATE_KEYSTORE=1
+LQXP_REWRITE_ANDROID_KEYSTORE_PROPERTIES=1
+ANDROID_KEYSTORE_PATH=$HOME/.config/lqxp-client/lqxp-release.jks
+ANDROID_KEYSTORE_PASSWORD='$ANDROID_SIGNING_PASSWORD'
+ANDROID_KEY_ALIAS=lqxp
+ANDROID_KEY_PASSWORD='$ANDROID_SIGNING_PASSWORD'
+ANDROID_KEY_DNAME='CN=LQXP Client, OU=LQXP, O=LQXP, L=Unknown, ST=Unknown, C=XX'
+EOF
+chmod 600 .env
+unset ANDROID_SIGNING_PASSWORD
 ```
 
-By default, the generated keystore is stored at:
+Then build a signed release APK:
+
+```bash
+bun run build:android -- --apk --target aarch64
+```
+
+On the first release build, the script creates the keystore at:
 
 ```text
 ~/.config/lqxp-client/lqxp-release.jks
 ```
 
-For subsequent signed release builds, provide the same keystore password:
+and writes Gradle's generated signing configuration to:
 
-```bash
-ANDROID_KEYSTORE_PASSWORD='change-me' bun run build:android -- --apk --target aarch64
+```text
+src-tauri/gen/android/keystore.properties
 ```
 
-You can also point to an existing keystore:
+The relevant variables are:
 
-```bash
-ANDROID_KEYSTORE_PATH=/absolute/path/to/release.jks \
-ANDROID_KEYSTORE_PASSWORD='change-me' \
-ANDROID_KEY_ALIAS=lqxp \
-ANDROID_KEY_PASSWORD='change-me' \
-bun run build:android -- --apk --target aarch64
+```properties
+LQXP_ANDROID_CREATE_KEYSTORE=1
+LQXP_REWRITE_ANDROID_KEYSTORE_PROPERTIES=1
+ANDROID_KEYSTORE_PATH=/absolute/path/to/lqxp-release.jks
+ANDROID_KEYSTORE_PASSWORD=change-me
+ANDROID_KEY_ALIAS=lqxp
+ANDROID_KEY_PASSWORD=change-me
+ANDROID_KEY_DNAME=CN=LQXP Client, OU=LQXP, O=LQXP, L=Unknown, ST=Unknown, C=XX
 ```
+
+You can also point `.env` to an existing keystore instead of generating a new one by setting `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and optionally `ANDROID_KEY_PASSWORD`.
 
 Expected APK output locations include:
 

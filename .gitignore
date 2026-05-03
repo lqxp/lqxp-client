@@ -4,6 +4,9 @@ serve.public/
 *.log
 .DS_Store
 out/
+.env
+.env.*
+!.env.example
 src-tauri/target/
 src-tauri/gen/android/.gradle/
 src-tauri/gen/android/build/

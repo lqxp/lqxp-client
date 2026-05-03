@@ -3,6 +3,18 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+load_dotenv() {
+  if [[ -f .env ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env
+    set +a
+    export LQXP_DOTENV_LOADED=1
+  fi
+}
+
+load_dotenv
+
 if [[ "${LQXP_ANDROID_BUILD_RUNNING:-}" != "1" ]]; then
   if command -v nix >/dev/null 2>&1 && [[ -f flake.nix ]]; then
     echo "Entering nix develop for Android build..."
@@ -69,14 +81,19 @@ configure_android_release_signing() {
   is_release_build "$@" || return 0
 
   local keystore_properties="src-tauri/gen/android/keystore.properties"
-  if [[ -f "$keystore_properties" && "${LQXP_REWRITE_ANDROID_KEYSTORE_PROPERTIES:-}" != "1" ]]; then
-    return 0
-  fi
-
   local keystore_path="${ANDROID_KEYSTORE_PATH:-$HOME/.config/lqxp-client/lqxp-release.jks}"
   local keystore_password="${ANDROID_KEYSTORE_PASSWORD:-}"
   local key_alias="${ANDROID_KEY_ALIAS:-lqxp}"
   local key_password="${ANDROID_KEY_PASSWORD:-$keystore_password}"
+
+  local has_explicit_signing_config=0
+  if [[ -n "${ANDROID_KEYSTORE_PATH:-}${ANDROID_KEYSTORE_PASSWORD:-}${ANDROID_KEY_ALIAS:-}${ANDROID_KEY_PASSWORD:-}${LQXP_ANDROID_CREATE_KEYSTORE:-}${LQXP_DOTENV_LOADED:-}" ]]; then
+    has_explicit_signing_config=1
+  fi
+
+  if [[ -f "$keystore_properties" && "${LQXP_REWRITE_ANDROID_KEYSTORE_PROPERTIES:-}" != "1" && "$has_explicit_signing_config" != "1" ]]; then
+    return 0
+  fi
 
   if [[ ! -f "$keystore_path" && "${LQXP_ANDROID_CREATE_KEYSTORE:-}" == "1" ]]; then
     command -v keytool >/dev/null 2>&1 || {
@@ -184,7 +201,7 @@ bun install --no-save
 
 build_args=("$@")
 if [[ ${#build_args[@]} -eq 0 ]]; then
-  build_args=(--debug --apk)
+  build_args=(--debug --apk --target aarch64)
 fi
 
 configure_android_release_signing "${build_args[@]}"
