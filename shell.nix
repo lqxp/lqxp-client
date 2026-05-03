@@ -86,6 +86,12 @@ pkgs.mkShell {
   ]) ++ gstTools ++ gstPlugins;
 
   shellHook = ''
+    if [ -f .env ]; then
+      set -a
+      . ./.env
+      set +a
+    fi
+
     export RUSTUP_TOOLCHAIN="''${RUSTUP_TOOLCHAIN:-stable}"
     export TMPDIR="/tmp"
 
