@@ -9,13 +9,13 @@ if [[ "${LQXP_ANDROID_BUILD_RUNNING:-}" == "1" ]]; then
 fi
 
 if [[ "${IN_NIX_SHELL:-}" != "pure" && "${IN_NIX_SHELL:-}" != "impure" ]]; then
-  if command -v nix-shell >/dev/null 2>&1 && [[ -f shell.nix ]]; then
+  if command -v nix >/dev/null 2>&1 && [[ -f flake.nix ]]; then
+    echo "Entering nix develop for Android build..."
+    exec nix develop --command env LQXP_ANDROID_BUILD_RUNNING=1 scripts/build-android.sh "$@"
+  elif command -v nix-shell >/dev/null 2>&1 && [[ -f shell.nix ]]; then
     echo "Entering nix-shell for Android build..."
     printf -v quoted_args "%q " "$@"
     exec nix-shell --run "LQXP_ANDROID_BUILD_RUNNING=1 scripts/build-android.sh ${quoted_args}"
-  elif command -v nix >/dev/null 2>&1 && [[ -f flake.nix ]]; then
-    echo "Entering nix develop for Android build..."
-    exec nix develop --command env LQXP_ANDROID_BUILD_RUNNING=1 scripts/build-android.sh "$@"
   fi
 
   echo "warning: not running inside nix-shell/nix develop, continuing with the current environment." >&2
