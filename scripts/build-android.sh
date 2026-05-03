@@ -77,6 +77,23 @@ is_release_build() {
   return 0
 }
 
+sync_android_launcher_icons() {
+  local icon_source="src-tauri/icons/android"
+  local res_target="src-tauri/gen/android/app/src/main/res"
+
+  [[ -d "$icon_source" && -d "$res_target" ]] || return 0
+
+  for dir in "$icon_source"/*; do
+    [[ -d "$dir" ]] || continue
+    local name
+    name="$(basename "$dir")"
+    mkdir -p "$res_target/$name"
+    cp -f "$dir"/* "$res_target/$name/"
+  done
+
+  echo "Synced Android launcher icons from $icon_source to $res_target"
+}
+
 configure_android_release_signing() {
   is_release_build "$@" || return 0
 
@@ -169,6 +186,8 @@ fi
 if [[ ! -d src-tauri/gen/android || "${LQXP_FORCE_ANDROID_INIT:-}" == "1" ]]; then
   bun tauri android init
 fi
+
+sync_android_launcher_icons
 
 local_properties="src-tauri/gen/android/local.properties"
 if [[ ! -f "$local_properties" || "${LQXP_REWRITE_ANDROID_LOCAL_PROPERTIES:-}" == "1" ]]; then
