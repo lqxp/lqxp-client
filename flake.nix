@@ -72,20 +72,16 @@
             cargo-tauri
             cargo-ndk
 
-            # JS
             bun
 
-            # Android
             androidComposition.platform-tools
             androidSdk
             gradle
             jdk
 
-            # build
             pkg-config
             gobject-introspection
 
-            # GTK / WebKit
             wrapGAppsHook4
             gst_all_1.gstreamer.dev
           ];
@@ -110,12 +106,11 @@
             ++ gstPlugins;
 
           shellHook = ''
-            # ENV
             export JAVA_HOME="${jdk.home}"
             export ANDROID_HOME="${androidSdkRoot}"
             export ANDROID_SDK_ROOT="${androidSdkRoot}"
 
-            # NDK
+            # Android NDK
             android_ndk_dir="$ANDROID_SDK_ROOT/ndk-bundle"
             if [ -d "$ANDROID_SDK_ROOT/ndk" ]; then
               android_ndk_candidate="$(find "$ANDROID_SDK_ROOT/ndk" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
@@ -131,11 +126,15 @@
             export ANDROID_API_LEVEL="24"
             export ANDROID_PLATFORM="android-$ANDROID_API_LEVEL"
 
+            # IMPORTANT: fix unbound variable error (Tauri Android targets)
+            : "''${TAURI_ANDROID_RUST_TARGETS:=aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android}"
+            export TAURI_ANDROID_RUST_TARGETS
+
             export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
 
-            # CMAKE
+            # CMake
             if [ -d "$ANDROID_SDK_ROOT/cmake" ]; then
-              export CMAKE_ROOT="$(find "$ANDROID_SDK_ROOT/cmake" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+              CMAKE_ROOT="$(find "$ANDROID_SDK_ROOT/cmake" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
               export PATH="$CMAKE_ROOT/bin:$PATH"
             fi
 
@@ -150,7 +149,7 @@
             export GIO_MODULE_DIR="${pkgs.glib-networking}/lib/gio/modules"
             export WEBKIT_DISABLE_DMABUF_RENDERER=1
 
-            # Android linkers
+            # Android linker setup
             case "$(uname -s)-$(uname -m)" in
               Linux-x86_64) android_host_tag="linux-x86_64" ;;
               *) android_host_tag="" ;;
