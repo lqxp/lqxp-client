@@ -57,6 +57,80 @@ command -v cargo >/dev/null 2>&1 || {
   exit 1
 }
 
+is_release_build() {
+  local arg
+  for arg in "$@"; do
+    if [[ "$arg" == "--debug" ]]; then
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+configure_android_release_signing() {
+  is_release_build "$@" || return 0
+
+  local keystore_properties="src-tauri/gen/android/keystore.properties"
+  if [[ -f "$keystore_properties" && "${LQXP_REWRITE_ANDROID_KEYSTORE_PROPERTIES:-}" != "1" ]]; then
+    return 0
+  fi
+
+  local keystore_path="${ANDROID_KEYSTORE_PATH:-$HOME/.config/lqxp-client/lqxp-release.jks}"
+  local keystore_password="${ANDROID_KEYSTORE_PASSWORD:-}"
+  local key_alias="${ANDROID_KEY_ALIAS:-lqxp}"
+  local key_password="${ANDROID_KEY_PASSWORD:-$keystore_password}"
+
+  if [[ ! -f "$keystore_path" && "${LQXP_ANDROID_CREATE_KEYSTORE:-}" == "1" ]]; then
+    command -v keytool >/dev/null 2>&1 || {
+      echo "error: keytool is required to create an Android release keystore." >&2
+      exit 1
+    }
+
+    if [[ -z "$keystore_password" && -t 0 ]]; then
+      read -rsp "Android release keystore password: " keystore_password
+      echo
+    fi
+
+    if [[ -z "$keystore_password" ]]; then
+      echo "error: ANDROID_KEYSTORE_PASSWORD is required when LQXP_ANDROID_CREATE_KEYSTORE=1." >&2
+      exit 1
+    fi
+
+    key_password="${ANDROID_KEY_PASSWORD:-$keystore_password}"
+    mkdir -p "$(dirname "$keystore_path")"
+    keytool -genkeypair \
+      -v \
+      -keystore "$keystore_path" \
+      -storepass "$keystore_password" \
+      -alias "$key_alias" \
+      -keypass "$key_password" \
+      -keyalg RSA \
+      -keysize 2048 \
+      -validity 10000 \
+      -dname "${ANDROID_KEY_DNAME:-CN=LQXP Client, OU=LQXP, O=LQXP, L=Unknown, ST=Unknown, C=XX}"
+  fi
+
+  if [[ -f "$keystore_path" && -n "$keystore_password" && -n "$key_alias" && -n "$key_password" ]]; then
+    cat > "$keystore_properties" <<EOF
+ANDROID_KEYSTORE_PATH=$keystore_path
+ANDROID_KEYSTORE_PASSWORD=$keystore_password
+ANDROID_KEY_ALIAS=$key_alias
+ANDROID_KEY_PASSWORD=$key_password
+EOF
+    chmod 600 "$keystore_properties"
+    echo "Android release signing enabled via $keystore_properties"
+    return 0
+  fi
+
+  cat >&2 <<EOF
+warning: release signing is not configured; Gradle will produce an unsigned APK.
+To create and use a local release keystore, run for example:
+  LQXP_ANDROID_CREATE_KEYSTORE=1 ANDROID_KEYSTORE_PASSWORD='change-me' bun run build:android -- --apk --target aarch64
+Or set ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and optionally ANDROID_KEY_PASSWORD.
+EOF
+}
+
 if [[ -z "${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}" ]]; then
   echo "error: ANDROID_SDK_ROOT/ANDROID_HOME is not set. Run through nix-shell or nix develop." >&2
   exit 1
@@ -101,6 +175,8 @@ build_args=("$@")
 if [[ ${#build_args[@]} -eq 0 ]]; then
   build_args=(--debug --apk)
 fi
+
+configure_android_release_signing "${build_args[@]}"
 
 bun tauri android build "${build_args[@]}"
 
