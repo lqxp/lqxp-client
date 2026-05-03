@@ -87,8 +87,9 @@ pkgs.mkShell {
 
   shellHook = ''
     export RUSTUP_TOOLCHAIN="''${RUSTUP_TOOLCHAIN:-stable}"
+    export TMPDIR="/tmp"
 
-    export LQXP_RUSTUP_BIN_DIR="''${TMPDIR:-/tmp}/lqxp-client-rustup-bin-''${UID:-$(id -u)}"
+    export LQXP_RUSTUP_BIN_DIR="/tmp/lqxp-client-rustup-bin-''${UID:-$(id -u)}"
     mkdir -p "$LQXP_RUSTUP_BIN_DIR"
 
     printf '%s\n' \
