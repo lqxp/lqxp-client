@@ -206,6 +206,12 @@ jobs:
             zipalign="$(find -L "$ANDROID_HOME/build-tools" -type f -name zipalign | sort -V | tail -n1)"
             "$apksigner" verify --verbose --print-certs "$apk"
             "$zipalign" -c -P 16 -v 4 "$apk"
+
+            release_output_dir="src-tauri/gen/android/app/build/outputs/apk/release"
+            release_apk="$release_output_dir/QxChat_${{ needs.prepare-release.outputs.app_version }}_aarch64.apk"
+            mkdir -p "$release_output_dir"
+            cp "$apk" "$release_apk"
+            echo "Android APK release asset: $release_apk"
           '
 
       - name: Upload Android artifacts
@@ -214,7 +220,7 @@ jobs:
           name: qxchat-android
           if-no-files-found: error
           path: |
-            src-tauri/gen/android/app/build/outputs/apk/**/release/*.apk
+            src-tauri/gen/android/app/build/outputs/apk/release/*.apk
 
       - name: Upload Android release assets
         uses: softprops/action-gh-release@v2
@@ -225,7 +231,7 @@ jobs:
             Build automatique GitHub Actions pour la version ${{ needs.prepare-release.outputs.app_version }}.
           generate_release_notes: true
           files: |
-            src-tauri/gen/android/app/build/outputs/apk/**/release/*.apk
+            src-tauri/gen/android/app/build/outputs/apk/release/*.apk
 
   # build-ios:
   #   name: Build iOS IPA
