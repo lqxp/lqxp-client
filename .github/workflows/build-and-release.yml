@@ -123,9 +123,9 @@ jobs:
       - name: Install frontend dependencies (root)
         run: bun install --frozen-lockfile
 
-      - name: Install frontend dependencies (QxpClient)
+      - name: Install frontend dependencies (client)
         run: bun install --frozen-lockfile
-        working-directory: QxpClient
+        working-directory: client
 
       - name: Build and upload release assets
         uses: tauri-apps/tauri-action@v0.6.2
@@ -190,7 +190,7 @@ jobs:
           nix develop --command bash -lc '
             set -euo pipefail
             bun install --no-save
-            (cd QxpClient && bun install --no-save)
+            (cd client && bun install --no-save)
             rustup toolchain install "${RUSTUP_TOOLCHAIN:-stable}" --profile minimal
             rustup target add --toolchain "${RUSTUP_TOOLCHAIN:-stable}" $TAURI_ANDROID_RUST_TARGETS
             mkdir -p src-tauri/gen/android/app/src/main/res
@@ -306,7 +306,7 @@ jobs:
   #     - name: Install dependencies
   #       run: |
   #         bun install --frozen-lockfile
-  #         (cd QxpClient && bun install --frozen-lockfile)
+  #         (cd client && bun install --frozen-lockfile)
 
   #     - name: Generate iOS project
   #       run: bun run ios:init

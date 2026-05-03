@@ -1,3 +1,4 @@
-[submodule "QxpClient"]
-	path = QxpClient
-	url = https://github.com/lqxp/QxpClient.git
+[submodule "client"]
+	path = client
+	url = https://github.com/lqxp/client.git
+    branch = main

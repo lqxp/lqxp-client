@@ -38,7 +38,7 @@ fi
 rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim
 
 bun install --no-save
-(cd QxpClient && bun install --no-save)
+(cd client && bun install --no-save)
 
 if [[ ! -d src-tauri/gen/apple || "${LQXP_FORCE_IOS_INIT:-}" == "1" ]]; then
   bun run ios:init

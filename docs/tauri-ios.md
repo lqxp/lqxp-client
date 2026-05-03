@@ -1,6 +1,6 @@
 # Tauri iOS build
 
-The iOS build belongs to this repository root. The Tauri project is `src-tauri`, and it packages the frontend from the `QxpClient` submodule.
+The iOS build belongs to this repository root. The Tauri project is `src-tauri`, and it packages the frontend from the `client` submodule.
 
 ## Local build
 
@@ -20,7 +20,7 @@ Without Nix:
 Useful environment variables:
 
 - `APPLE_DEVELOPMENT_TEAM`: Apple Developer Team ID used by Tauri/Xcode signing.
-- `QXP_RUNTIME_CONFIG_URL`: URL used by `QxpClient/scripts/sync-runtime-config.mjs` to copy runtime server/RTC settings into the packaged app.
+- `QXP_RUNTIME_CONFIG_URL`: URL used by `client/scripts/sync-runtime-config.mjs` to copy runtime server/RTC settings into the packaged app.
 - `QXP_SERVER_ORIGIN`: overrides the packaged API/WebSocket origin.
 - `LQXP_FORCE_IOS_INIT=1`: regenerates the Tauri Apple project before building.
 

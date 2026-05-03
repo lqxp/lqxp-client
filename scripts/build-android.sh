@@ -216,7 +216,7 @@ if [[ -x src-tauri/gen/android/gradlew ]]; then
 fi
 
 bun install --no-save
-(cd QxpClient && bun install --no-save)
+(cd client && bun install --no-save)
 
 build_args=("$@")
 if [[ ${#build_args[@]} -eq 0 ]]; then
