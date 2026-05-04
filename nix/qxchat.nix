@@ -23,6 +23,9 @@
   dbus,
   gst_all_1,
   pipewire,
+  libdrm,
+  libgbm,
+  mesa,
 }:
 
 let
@@ -101,6 +104,9 @@ EOF
     harfbuzz
     librsvg
     dbus
+    libdrm
+    libgbm
+    mesa
   ]
   ++ gstPlugins;
 
