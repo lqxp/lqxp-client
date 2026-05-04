@@ -22,6 +22,7 @@
   librsvg,
   dbus,
   gst_all_1,
+  nodejs,
 }:
 
 let
@@ -54,7 +55,8 @@ in
 rustPlatform.buildRustPackage {
   inherit pname version;
 
-  src = lib.cleanSource ../.;
+  # Keep client/dist in the source tree (it is gitignored but required by Tauri at build/runtime).
+  src = ../.;
   cargoRoot = "src-tauri";
   buildAndTestSubdir = "src-tauri";
 
@@ -68,7 +70,25 @@ rustPlatform.buildRustPackage {
     wrapGAppsHook4
     copyDesktopItems
     gobject-introspection
+    nodejs
   ];
+
+  preBuild = ''
+    frontend_dir=""
+    if [ -d client ]; then
+      frontend_dir="client"
+    elif [ -d ../client ]; then
+      frontend_dir="../client"
+    else
+      echo "Cannot find client frontend directory" >&2
+      exit 1
+    fi
+
+    pushd "$frontend_dir" >/dev/null
+    npm ci
+    npm run build
+    popd >/dev/null
+  '';
 
   postPatch = ''
     cat > client/dist/runtime-config.js <<'EOF'
