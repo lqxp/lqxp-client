@@ -17,6 +17,10 @@
     "ios:dev": "scripts/ios-dev.sh",
     "ios:build": "scripts/ios-build.sh",
     "tauri": "tauri",
+    "version:set": "python3 scripts/bump-version.py set",
+    "patch": "python3 scripts/bump-version.py patch",
+    "minor": "python3 scripts/bump-version.py minor",
+    "major": "python3 scripts/bump-version.py major",
     "typecheck": "tsc --noEmit"
   },
   "author": "",
