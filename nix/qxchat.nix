@@ -40,6 +40,7 @@ let
   ];
 
   gstPluginPath = lib.concatStringsSep ":" (map (pkg: "${pkg}/lib/gstreamer-1.0") gstPlugins);
+  pipewireSpaPath = "${pipewire}/lib/spa-0.2";
 
   desktopItem = makeDesktopItem {
     name = "qxchat";
@@ -110,9 +111,12 @@ EOF
 
     wrapProgram "$out/bin/lqxp-client" \
       --set WEBKIT_DISABLE_DMABUF_RENDERER 1 \
+      --set GST_REGISTRY_1_0 "/tmp/qxchat-gst-registry.bin" \
       --set GIO_MODULE_DIR "${glib-networking}/lib/gio/modules" \
       --set GIO_EXTRA_MODULES "${glib-networking}/lib/gio/modules" \
-      --set GST_PLUGIN_SYSTEM_PATH_1_0 "${gstPluginPath}"
+      --set GST_PLUGIN_SYSTEM_PATH_1_0 "${gstPluginPath}" \
+      --set GST_PLUGIN_PATH_1_0 "${gstPluginPath}" \
+      --set SPA_PLUGIN_DIR "${pipewireSpaPath}"
 
     ln -s "$out/bin/lqxp-client" "$out/bin/qxchat"
   '';
