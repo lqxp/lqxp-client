@@ -27,6 +27,8 @@
   libgbm,
   libglvnd,
   mesa,
+  libepoxy,
+  wayland,
 }:
 
 let
@@ -64,6 +66,8 @@ let
     libgbm
     libglvnd
     mesa
+    libepoxy
+    wayland
     pipewire
   ] ++ gstPlugins);
 
@@ -130,6 +134,8 @@ EOF
     libgbm
     libglvnd
     mesa
+    libepoxy
+    wayland
   ]
   ++ gstPlugins;
 
@@ -140,6 +146,8 @@ EOF
 
     wrapProgram "$out/bin/lqxp-client" \
       --set WEBKIT_DISABLE_DMABUF_RENDERER 1 \
+      --set WEBKIT_DISABLE_COMPOSITING_MODE 1 \
+      --set GST_GL_API "none" \
       --set GST_REGISTRY_FORK "no" \
       --unset GST_PLUGIN_SCANNER \
       --unset GST_PLUGIN_SCANNER_1_0 \
