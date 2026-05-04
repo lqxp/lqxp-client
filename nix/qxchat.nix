@@ -54,6 +54,7 @@ let
     pnpmDeps = pnpm.fetchDeps {
       inherit pname version;
       src = frontendSrc;
+      fetcherVersion = 1;
       hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     };
 
