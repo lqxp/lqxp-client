@@ -115,7 +115,7 @@ rustPlatform.buildRustPackage {
     mkdir -p "$HOME" "$npm_config_cache"
 
     pushd client >/dev/null
-    npm ci
+    npm install
     npm run build:tauri
     popd >/dev/null
 
