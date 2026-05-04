@@ -61,7 +61,7 @@ let
     buildPhase = ''
       runHook preBuild
       pnpm install --offline --frozen-lockfile
-      pnpm run build:tauri
+      pnpm run build
       runHook postBuild
     '';
 
