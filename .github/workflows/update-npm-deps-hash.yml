@@ -1,11 +1,12 @@
-name: Update npmDepsHash
+name: Update pnpm fetch hash
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - "client/package-lock.json"
+      - "client/pnpm-lock.yaml"
       - "nix/qxchat.nix"
+      - ".github/workflows/update-npm-deps-hash.yml"
 
 jobs:
   update-hash:
@@ -26,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          out=$(nix build .#qxchat 2>&1)
+          out=$(nix-build -E 'with import <nixpkgs> {}; callPackage ./nix/qxchat.nix {}' 2>&1)
           code=$?
           echo "$out"
           if [ $code -eq 0 ]; then
@@ -36,30 +37,31 @@ jobs:
 
           hash=$(echo "$out" | sed -n 's/.*got:[[:space:]]*\(sha256-[A-Za-z0-9+/=]*\).*/\1/p' | head -n1)
           if [ -z "$hash" ]; then
-            echo "Impossible de trouver le hash dans la sortie nix."
+            echo "Could not find expected sha256 hash in nix output"
             exit 1
           fi
+
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
 
       - name: Patch nix/qxchat.nix
         if: steps.hash.outputs.already_ok != 'true'
         shell: bash
         run: |
-          sed -i "s#npmDepsHash = \"sha256-[^\"]*\";#npmDepsHash = \"${{ steps.hash.outputs.hash }}\";#" nix/qxchat.nix
-          grep -n "npmDepsHash" nix/qxchat.nix
+          sed -i "s#hash = \"sha256-[^\"]*\";#hash = \"${{ steps.hash.outputs.hash }}\";#" nix/qxchat.nix
+          grep -n "hash = \"sha256-" nix/qxchat.nix
 
             - name: Create Pull Request
         if: steps.hash.outputs.already_ok != 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: "chore(nix): update npmDepsHash"
-          title: "chore(nix): update npmDepsHash"
+          commit-message: "chore(nix): update pnpm fetch hash"
+          title: "chore(nix): update pnpm fetch hash"
           body: |
-            Automated update of `npmDepsHash` in `nix/qxchat.nix`.
+            Automated update of the `pnpm.fetchDeps` hash in `nix/qxchat.nix`.
 
-            - Triggered by changes to `client/package-lock.json` or manual dispatch
+            - Triggered by changes to `client/pnpm-lock.yaml` or manual dispatch
             - Hash extracted from Nix fixed-output derivation error (`got: sha256-...`)
-          branch: "ci/update-npm-deps-hash"
+          branch: "ci/update-pnpm-fetch-hash"
           delete-branch: true
           labels: |
             ci
