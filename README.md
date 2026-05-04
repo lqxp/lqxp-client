@@ -81,7 +81,7 @@ To build a release APK:
 bun run build:android -- --apk --target aarch64
 ```
 
-Release APK signing is configured through environment variables. Both `flake.nix`/`shell.nix` and `scripts/build-android.sh` load a local `.env` file automatically if it exists. `.env`, keystores, and generated Gradle signing files are ignored by git.
+Release APK signing is configured through environment variables. Via `flake.nix` and `scripts/build-android.sh` load a local `.env` file automatically if it exists. `.env`, keystores, and generated Gradle signing files are ignored by git.
 
 Create a new local signing password and `.env` file:
 
@@ -217,7 +217,7 @@ Native media permissions for macOS are declared in `src-tauri/Info.plist` for ca
 
 ## NixOS
 
-`shell.nix` and `flake.nix` include the Linux dependencies that Tauri expects on NixOS, including GTK, WebKitGTK 4.1, GLib, `libsoup_3`, `librsvg`, and the GIO networking module setup required by WebKit.
+`flake.nix` include the Linux dependencies that Tauri expects on NixOS, including GTK, WebKitGTK 4.1, GLib, `libsoup_3`, `librsvg`, and the GIO networking module setup required by WebKit.
 
 ## License
 
