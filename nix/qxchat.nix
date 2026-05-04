@@ -22,7 +22,6 @@
   librsvg,
   dbus,
   gst_all_1,
-  nodejs,
 }:
 
 let
@@ -70,33 +69,18 @@ rustPlatform.buildRustPackage {
     wrapGAppsHook4
     copyDesktopItems
     gobject-introspection
-    nodejs
   ];
 
-  preBuild = ''
-    export HOME="$TMPDIR/home"
-    export npm_config_cache="$TMPDIR/npm-cache"
-    mkdir -p "$HOME" "$npm_config_cache"
+  postPatch = ''
+    # Prevent Tauri from trying to run bun/npm build steps inside the sandbox.
+    substituteInPlace src-tauri/tauri.conf.json \
+      --replace-fail '"beforeBuildCommand": "cd client && bun run build:tauri",' '"beforeBuildCommand": "",'
 
-    frontend_dir=""
-    if [ -d client ]; then
-      frontend_dir="client"
-    elif [ -d ../client ]; then
-      frontend_dir="../client"
-    else
-      echo "Cannot find client frontend directory" >&2
-      exit 1
-    fi
+    test -f client/dist/index.html || (echo "Missing client/dist/index.html (build frontend once locally)" >&2; exit 1)
 
-    pushd "$frontend_dir" >/dev/null
-    npm ci
-    npm run build
-
-    cat > dist/runtime-config.js <<'EOF'
+    cat > client/dist/runtime-config.js <<'EOF'
 window.__QXP_RUNTIME__ = {"apiBaseUrl":"https://qxp.kisakay.com","rtc":{"callsEnabled":true,"callsUnavailableReason":"","relayOnly":true,"turnCredential":"df64240e730e15fdfb75d6cff95367b95ed341bd98517544","turnUrls":["turn:turn.qxp.kisakay.com:3478?transport=udp","turn:turn.qxp.kisakay.com:3478?transport=tcp","turns:turn.qxp.kisakay.com:5349?transport=tcp"],"turnUsername":"qxp-turn"},"serverOrigin":"https://qxp.kisakay.com","wsUrl":"wss://qxp.kisakay.com/ws"};
 EOF
-
-    popd >/dev/null
   '';
 
   buildInputs = [
