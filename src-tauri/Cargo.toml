@@ -13,7 +13,7 @@ name = "lqxp_client_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.5.6", features = [] }
+tauri-build = { version = "=2.5.6", features = [] }
 
 [dependencies]
 tauri = { version = "=2.10.3", features = ["custom-protocol"] }
