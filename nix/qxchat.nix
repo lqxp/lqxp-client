@@ -1,6 +1,7 @@
 {
   lib,
   rustPlatform,
+  buildNpmPackage,
   pkg-config,
   makeWrapper,
   wrapGAppsHook4,
@@ -35,6 +36,25 @@
 let
   pname = "qxchat";
   version = "1.0.0";
+
+  frontend = buildNpmPackage {
+    pname = "${pname}-frontend";
+    inherit version;
+
+    src = ../client;
+
+    # Remplace cette valeur après le premier build raté avec le hash affiché par Nix.
+    npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+
+    npmBuildScript = "build:tauri";
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -r dist $out/
+      runHook postInstall
+    '';
+  };
 
   gstPlugins = [
     gst_all_1.gstreamer
@@ -110,14 +130,9 @@ rustPlatform.buildRustPackage {
     substituteInPlace src-tauri/tauri.conf.json \
       --replace-fail '"beforeBuildCommand": "cd client && bun run build:tauri",' '"beforeBuildCommand": "",'
 
-    export HOME="$TMPDIR/home"
-    export npm_config_cache="$TMPDIR/npm-cache"
-    mkdir -p "$HOME" "$npm_config_cache"
-
-    pushd client >/dev/null
-    npm install
-    npm run build:tauri
-    popd >/dev/null
+    rm -rf client/dist
+    mkdir -p client
+    cp -r ${frontend}/dist client/dist
 
     cat > client/dist/runtime-config.js <<'EOF'
 window.__QXP_RUNTIME__ = {"apiBaseUrl":"https://qxp.kisakay.com","rtc":{"callsEnabled":true,"callsUnavailableReason":"","relayOnly":true,"turnCredential":"df64240e730e15fdfb75d6cff95367b95ed341bd98517544","turnUrls":["turn:turn.qxp.kisakay.com:3478?transport=udp","turn:turn.qxp.kisakay.com:3478?transport=tcp","turns:turn.qxp.kisakay.com:5349?transport=tcp"],"turnUsername":"qxp-turn"},"serverOrigin":"https://qxp.kisakay.com","wsUrl":"wss://qxp.kisakay.com/ws"};
