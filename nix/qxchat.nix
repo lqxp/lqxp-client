@@ -43,8 +43,7 @@ let
 
     src = ../client;
 
-    # Remplace cette valeur après le premier build raté avec le hash affiché par Nix.
-    npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    npmDepsHash = "sha256-My31JQzv3Whq0eBdFMZ7QinGUVmaeT5Q/RyDT+mUxcA=";
 
     npmBuildScript = "build:tauri";
 
@@ -68,29 +67,32 @@ let
 
   gstPluginPath = lib.concatStringsSep ":" (map (pkg: "${pkg}/lib/gstreamer-1.0") gstPlugins);
   pipewireSpaPath = "${pipewire}/lib/spa-0.2";
-  runtimeLibPath = lib.makeLibraryPath ([
-    gtk3
-    webkitgtk_4_1
-    libsoup_3
-    openssl
-    glib
-    gdk-pixbuf
-    pango
-    cairo
-    atkmm
-    at-spi2-atk
-    glib-networking
-    harfbuzz
-    librsvg
-    dbus
-    libdrm
-    libgbm
-    libglvnd
-    mesa
-    libepoxy
-    wayland
-    pipewire
-  ] ++ gstPlugins);
+  runtimeLibPath = lib.makeLibraryPath (
+    [
+      gtk3
+      webkitgtk_4_1
+      libsoup_3
+      openssl
+      glib
+      gdk-pixbuf
+      pango
+      cairo
+      atkmm
+      at-spi2-atk
+      glib-networking
+      harfbuzz
+      librsvg
+      dbus
+      libdrm
+      libgbm
+      libglvnd
+      mesa
+      libepoxy
+      wayland
+      pipewire
+    ]
+    ++ gstPlugins
+  );
 
   desktopItem = makeDesktopItem {
     name = "qxchat";
@@ -126,17 +128,17 @@ rustPlatform.buildRustPackage {
   ];
 
   postPatch = ''
-    # Prevent Tauri from trying to run bun build steps inside the Rust build hook.
-    substituteInPlace src-tauri/tauri.conf.json \
-      --replace-fail '"beforeBuildCommand": "cd client && bun run build:tauri",' '"beforeBuildCommand": "",'
+        # Prevent Tauri from trying to run bun build steps inside the Rust build hook.
+        substituteInPlace src-tauri/tauri.conf.json \
+          --replace-fail '"beforeBuildCommand": "cd client && bun run build:tauri",' '"beforeBuildCommand": "",'
 
-    rm -rf client/dist
-    mkdir -p client
-    cp -r ${frontend}/dist client/dist
+        rm -rf client/dist
+        mkdir -p client
+        cp -r ${frontend}/dist client/dist
 
-    cat > client/dist/runtime-config.js <<'EOF'
-window.__QXP_RUNTIME__ = {"apiBaseUrl":"https://qxp.kisakay.com","rtc":{"callsEnabled":true,"callsUnavailableReason":"","relayOnly":true,"turnCredential":"df64240e730e15fdfb75d6cff95367b95ed341bd98517544","turnUrls":["turn:turn.qxp.kisakay.com:3478?transport=udp","turn:turn.qxp.kisakay.com:3478?transport=tcp","turns:turn.qxp.kisakay.com:5349?transport=tcp"],"turnUsername":"qxp-turn"},"serverOrigin":"https://qxp.kisakay.com","wsUrl":"wss://qxp.kisakay.com/ws"};
-EOF
+        cat > client/dist/runtime-config.js <<'EOF'
+    window.__QXP_RUNTIME__ = {"apiBaseUrl":"https://qxp.kisakay.com","rtc":{"callsEnabled":true,"callsUnavailableReason":"","relayOnly":true,"turnCredential":"df64240e730e15fdfb75d6cff95367b95ed341bd98517544","turnUrls":["turn:turn.qxp.kisakay.com:3478?transport=udp","turn:turn.qxp.kisakay.com:3478?transport=tcp","turns:turn.qxp.kisakay.com:5349?transport=tcp"],"turnUsername":"qxp-turn"},"serverOrigin":"https://qxp.kisakay.com","wsUrl":"wss://qxp.kisakay.com/ws"};
+    EOF
   '';
 
   buildInputs = [
